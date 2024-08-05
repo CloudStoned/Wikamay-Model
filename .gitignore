@@ -3,3 +3,10 @@
 .cache/
 .cache_torch/
 model_files/
+
+#ALL IMAGE EXTENSIONS
+*.jpg
+*.jpeg
+*.JPG
+*.png
+*.PNG
