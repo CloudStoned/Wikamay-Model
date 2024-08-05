@@ -1,0 +1,5 @@
+*.pdf
+.venv/
+.cache/
+.cache_torch/
+model_files/
