@@ -10,3 +10,6 @@ model_files/
 *.JPG
 *.png
 *.PNG
+
+# Ignore venv
+TOOLS/capture_venv
