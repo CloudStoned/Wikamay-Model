@@ -14,3 +14,6 @@ model_files/
 
 # Ignore venv
 TOOLS/capture_venv
+
+#Ignore json
+*.json
