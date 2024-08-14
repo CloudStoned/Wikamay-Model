@@ -78,8 +78,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeApp() {
-        classes = loadClasses("alphs_nums.txt");
-        loadTorchModule("ASL_mobilenetv2.ptl");
+        classes = loadClasses("classes.txt");
+        loadTorchModule("mnetV2_35.ptl");
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
         cameraProviderFuture.addListener(() -> {
             try {
