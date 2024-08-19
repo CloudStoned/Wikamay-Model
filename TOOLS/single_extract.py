@@ -1,12 +1,13 @@
 import cv2
 import mediapipe as mp
 import numpy as np
+import os
 
 def extract_hand_landmarks(image_path):
     # Initialize MediaPipe Hands
     mp_hands = mp.solutions.hands
     mp_drawing = mp.solutions.drawing_utils
-    hands = mp_hands.Hands(static_image_mode=True, max_num_hands=2, min_detection_confidence=0.4)
+    hands = mp_hands.Hands(static_image_mode=True, max_num_hands=2, min_detection_confidence=0.3)
 
     # Read the image
     image = cv2.imread(image_path)
@@ -28,7 +29,7 @@ def extract_hand_landmarks(image_path):
     # Create a copy of the image for visualization
     annotated_image = image.copy()
 
-    # Extract landmarks and draw them on the image
+    landmarks_list = []
     for hand_landmarks in results.multi_hand_landmarks:
         mp_drawing.draw_landmarks(
             annotated_image, 
@@ -46,27 +47,45 @@ def extract_hand_landmarks(image_path):
                 'y': landmark.y,
                 'z': landmark.z
             })
+        landmarks_list.append(landmarks)
 
     # Close the MediaPipe Hands object
     hands.close()
 
-    return annotated_image, landmarks
+    return annotated_image, landmarks_list
 
 # Example usage
-image_path = 'test.jpg'  # Replace with your image path
-result = extract_hand_landmarks(image_path)
-
-if result:
-    annotated_image, landmarks = result
-    
-    # Display the annotated image
-    cv2.imshow('Hand Landmarks', annotated_image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-        
-    # Print the landmarks
-    print("Hand Landm   arks:")
-    for i, lm in enumerate(landmarks):
-        print(f"Landmark {i}: x={lm['x']:.4f}, y={lm['y']:.4f}, z={lm['z']:.4f}")
+# image_path = r'D:\SignLanguage\TOOLS\C_7 (6).jpg'
+image_path = r'D:\SignLanguage\TOOLS\test.jpg'  # Replace with your image path
+  # Replace with your image path
+if not os.path.exists(image_path):
+    print(f"Error: The file {image_path} does not exist.")
 else:
-    print("Failed to extract hand landmarks.")
+    result = extract_hand_landmarks(image_path)
+
+    if result:
+        annotated_image, landmarks_list = result
+        
+        # Resize the image to 266x266
+        resized_image = cv2.resize(annotated_image, (300, 300), interpolation=cv2.INTER_AREA)
+        
+        # Display the resized annotated image
+        cv2.imshow('Hand Landmarks', resized_image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+            
+        # Print the landmarks
+        print("Hand Landmarks:")
+        for hand_index, landmarks in enumerate(landmarks_list):
+            print(f"Hand {hand_index + 1}:")
+            for i, lm in enumerate(landmarks):
+                print(f"Landmark {i}: x={lm['x']:.4f}, y={lm['y']:.4f}, z={lm['z']:.4f}")
+    else:
+        print("Failed to extract hand landmarks.")
+
+# Save the annotated images
+# if result:
+#     cv2.imwrite('annotated_hand_original.jpg', annotated_image)
+#     cv2.imwrite('annotated_hand_resized.jpg', resized_image)
+#     print("Original annotated image saved as 'annotated_hand_original.jpg'")
+#     print("Resized annotated image saved as 'annotated_hand_resized.jpg'")
