@@ -2,7 +2,7 @@ import os
 import shutil
 
 # Define the paths
-base_path = r"D:\SignLanguage\TOOLS\LETTERS_NUMS_LR\DATASET"
+base_path = r"D:\SignLanguage\MAIN_DATASET\Backup\SORTED"
 left_path = os.path.join(base_path, "LEFT")
 right_path = os.path.join(base_path, "RIGHT")
 combine_path = os.path.join(base_path, "COMBINED")

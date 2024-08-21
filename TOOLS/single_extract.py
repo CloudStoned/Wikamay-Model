@@ -7,7 +7,7 @@ def extract_hand_landmarks(image_path):
     # Initialize MediaPipe Hands
     mp_hands = mp.solutions.hands
     mp_drawing = mp.solutions.drawing_utils
-    hands = mp_hands.Hands(static_image_mode=True, max_num_hands=2, min_detection_confidence=0.3)
+    hands = mp_hands.Hands(static_image_mode=False, max_num_hands=2, min_detection_confidence=0.5)
 
     # Read the image
     image = cv2.imread(image_path)
@@ -56,7 +56,7 @@ def extract_hand_landmarks(image_path):
 
 # Example usage
 # image_path = r'D:\SignLanguage\TOOLS\C_7 (6).jpg'
-image_path = r'D:\SignLanguage\TOOLS\test.jpg'  # Replace with your image path
+image_path = r'D:\SignLanguage\MAIN_DATASET\Backup\LEFT_NAMES\CLOUD\9\9_LEFT_C (1).jpg'  # Replace with your image path
   # Replace with your image path
 if not os.path.exists(image_path):
     print(f"Error: The file {image_path} does not exist.")

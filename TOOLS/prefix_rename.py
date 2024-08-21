@@ -5,7 +5,7 @@ def rename_files(folder_path):
     class_name = os.path.basename(folder_path)
     
     # Path to the LANDMARKS folder
-    landmarks_folder = os.path.join(folder_path, "LANDMARKS")
+    landmarks_folder = os.path.join(folder_path, "LANDMARK")
     
     # Iterate through all files in the main folder
     for filename in os.listdir(folder_path):
@@ -37,5 +37,5 @@ def rename_files(folder_path):
                 print(f"Warning: Landmark file not found for {filename}")
 
 # Example usage
-folder_path = r"D:\SignLanguage\MAIN_DATASET\Backup\SORTED\RIGHT\Z"
+folder_path = r"D:\SignLanguage\MAIN_DATASET\Backup\RIGHT_NAMES\HANS\Z"
 rename_files(folder_path)
