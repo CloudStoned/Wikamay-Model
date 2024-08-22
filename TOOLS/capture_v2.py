@@ -3,7 +3,7 @@ import mediapipe as mp
 import os
 import time
 import json
-import numpy as np
+import traceback
 
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
@@ -22,101 +22,109 @@ classes = [
 ]
 
 def capture_sign(sign):
-    # Create directory structure for storing images and landmarks
-    base_dir = os.path.join('TOOLS', 'GESTURES', sign)
-    img_dir = os.path.join(base_dir, 'IMG')
-    landmark_dir = os.path.join(base_dir, 'LANDMARK')
-    os.makedirs(img_dir, exist_ok=True)
-    os.makedirs(landmark_dir, exist_ok=True)
+    print(f"Entering capture_sign function for sign: {sign}")
+    try:
+        # Create directory structure for storing images and landmarks
+        base_dir = os.path.join('TOOLS', 'GESTURES', sign)
+        img_dir = os.path.join(base_dir, 'IMG')
+        landmark_dir = os.path.join(base_dir, 'LANDMARK')
+        os.makedirs(img_dir, exist_ok=True)
+        os.makedirs(landmark_dir, exist_ok=True)
+        print(f"Directories created: {img_dir}, {landmark_dir}")
 
-    # Counter for naming files
-    counter = 1
-    total_images = 67
-    collecting = False
+        # Counter for naming files
+        counter = 1
+        total_images = 67
+        collecting = False
 
-    print(f"Press 's' to start/resume collecting data for '{sign}'.")
-    print("Press 'p' to pause data collection.")    
-    print("Press 'q' to quit data collection for this sign.")
+        print(f"Press 's' to start/resume collecting data for '{sign}'.")
+        print("Press 'p' to pause data collection.")    
+        print("Press 'q' to quit data collection for this sign.")
 
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
-        
-        # Convert the BGR image to RGB for hand detection
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        
-        # Process the image and detect hands
-        results = hands.process(rgb_frame)
-        
-        # Create a copy of the frame for display
-        display_frame = frame.copy()
-        
-        # Draw hand landmarks on the display frame (for visual feedback)
-        if results.multi_hand_landmarks:
-            for hand_landmarks in results.multi_hand_landmarks:
-                mp_drawing.draw_landmarks(display_frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-        
-        # Add status text to the display frame
-        status_text = "Collecting" if collecting else "Paused"
-        cv2.putText(display_frame, f"Status: {status_text}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0) if collecting else (0, 0, 255), 2)
-        cv2.putText(display_frame, f"Images: {counter-1}/{total_images}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
-        cv2.putText(display_frame, f"Sign: {sign}", (10, 110), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
-        
-        # Display the frame with landmarks and status
-        cv2.imshow('Sign Language Data Collection', display_frame)
-        
-        key = cv2.waitKey(1) & 0xFF
-        if key == ord('s'):
-            collecting = True
-            print(f"Data collection started/resumed. Show sign for '{sign}'.")
-        elif key == ord('p'):
-            collecting = False
-            print("Data collection paused.")
-        elif key == ord('q'):
-            print(f"Quitting data collection for '{sign}'. Collected {counter-1} images.")
-            return
-        
-        if collecting and counter <= total_images:
-            try:
-                # Save the full frame
-                image_path = os.path.join(img_dir, f'{NAME_LETTER}_{counter}.jpg')
-                cv2.imwrite(image_path, frame)
-                
-                # Extract and save landmarks
-                if results.multi_hand_landmarks:
-                    landmarks_data = []
-                    for hand_landmarks in results.multi_hand_landmarks:
-                        hand_data = []
-                        for landmark in hand_landmarks.landmark:
-                            hand_data.append({
-                                'x': landmark.x,
-                                'y': landmark.y,
-                                'z': landmark.z
-                            })
-                        landmarks_data.append(hand_data)
-                    
-                    # Save landmarks as JSON
-                    landmarks_path = os.path.join(landmark_dir, f'{NAME_LETTER}_{counter}_landmarks.json')
-                    with open(landmarks_path, 'w') as f:
-                        json.dump(landmarks_data, f)
-                
-                print(f"Saved image and landmarks for frame {counter}/{total_images}")
-                counter += 1
-                
-                # Add a small delay to avoid duplicate frames
-                time.sleep(0.1)
-                
-                if counter > total_images:
-                    print(f"Data collection complete for '{sign}'!")
-                    collecting = False
-                    return
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                print("Error: Could not read frame from webcam")
+                break
             
-            except Exception as e:
-                print(f"An error occurred while saving the data: {e}")
+            # Convert the BGR image to RGB for hand detection
+            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            
+            # Process the image and detect hands
+            results = hands.process(rgb_frame)
+            
+            # Create a copy of the frame for display
+            display_frame = frame.copy()
+            
+            # Draw hand landmarks on the display frame (for visual feedback)
+            if results.multi_hand_landmarks:
+                for hand_landmarks in results.multi_hand_landmarks:
+                    mp_drawing.draw_landmarks(display_frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+            
+            # Add status text to the display frame
+            status_text = "Collecting" if collecting else "Paused"
+            cv2.putText(display_frame, f"Status: {status_text}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0) if collecting else (0, 0, 255), 2)
+            cv2.putText(display_frame, f"Images: {counter-1}/{total_images}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
+            cv2.putText(display_frame, f"Sign: {sign}", (10, 110), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+            
+            # Display the frame with landmarks and status
+            cv2.imshow('Sign Language Data Collection', display_frame)
+            
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('s'):
+                collecting = True
+                print(f"Data collection started/resumed. Show sign for '{sign}'.")
+            elif key == ord('p'):
                 collecting = False
+                print("Data collection paused.")
+            elif key == ord('q'):
+                print(f"Quitting data collection for '{sign}'. Collected {counter-1} images.")
+                return
+            
+            if collecting and counter <= total_images:
+                try:
+                    # Save the full frame
+                    image_path = os.path.join(img_dir, f'{NAME_LETTER}_{counter}.jpg')
+                    cv2.imwrite(image_path, frame)
+                    
+                    # Extract and save landmarks
+                    if results.multi_hand_landmarks:
+                        landmarks_data = []
+                        for hand_landmarks in results.multi_hand_landmarks:
+                            hand_data = []
+                            for landmark in hand_landmarks.landmark:
+                                hand_data.append({
+                                    'x': landmark.x,
+                                    'y': landmark.y,
+                                    'z': landmark.z
+                                })
+                            landmarks_data.append(hand_data)
+                        
+                        # Save landmarks as JSON
+                        landmarks_path = os.path.join(landmark_dir, f'{NAME_LETTER}_{counter}_landmarks.json')
+                        with open(landmarks_path, 'w') as f:
+                            json.dump(landmarks_data, f)
+                    
+                    print(f"Saved image and landmarks for frame {counter}/{total_images}")
+                    counter += 1
+                    
+                    # Add a small delay to avoid duplicate frames
+                    time.sleep(0.1)
+                    
+                    if counter > total_images:
+                        print(f"Data collection complete for '{sign}'!")
+                        collecting = False
+                        return
+                
+                except Exception as e:
+                    print(f"An error occurred while saving the data: {e}")
+                    print(traceback.format_exc())
+                    collecting = False
 
-# Main loop
+    except Exception as e:
+        print(f"An error occurred in capture_sign function: {e}")
+        print(traceback.format_exc())
+
 while True:
     print("\nAvailable classes:")
     for i, cls in enumerate(classes, 1):

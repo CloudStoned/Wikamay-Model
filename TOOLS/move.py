@@ -1,62 +1,42 @@
 import os
 import shutil
-import string
 
-def is_valid_class(class_name):
-    valid_classes = set(str(i) for i in range(11)) | set(string.ascii_uppercase)
-    return class_name in valid_classes
+def copy_and_organize_files(source_path, dest_path):
+    # Ensure the LANDMARKS folder exists in the destination
+    landmarks_dest = os.path.join(dest_path, 'LANDMARKS')
+    if not os.path.exists(landmarks_dest):
+        print("Error: LANDMARKS folder does not exist in the destination.")
+        return
 
-def reorganize_files(source_root, destination_root):
-    print(f"Starting file reorganization...")
-    print(f"Source directory: {source_root}")
-    print(f"Destination directory: {destination_root}")
+    # Get the class name from the source path
+    class_name = os.path.basename(source_path)
 
-    # Walk through the source directory
-    for root, dirs, files in os.walk(source_root):
-        # Get the relative path from the source root
-        rel_path = os.path.relpath(root, source_root)
-        parts = rel_path.split(os.sep)
+    # Create corresponding directory in destination for the class
+    class_dest = os.path.join(dest_path, class_name)
+    os.makedirs(class_dest, exist_ok=True)
 
-        # Skip the root directory itself
-        if len(parts) == 1 and parts[0] == '.':
-            continue
+    # Copy image files to the class folder
+    for file in os.listdir(source_path):
+        if file != 'LANDMARK':
+            src = os.path.join(source_path, file)
+            dst = os.path.join(class_dest, file)
+            shutil.copy2(src, dst)
 
-        # The class name is the first subdirectory under source_root
-        class_name = parts[0]
+    # Copy files from LANDMARK folder to LANDMARKS
+    landmark_path = os.path.join(source_path, 'LANDMARK')
+    if os.path.exists(landmark_path):
+        for file in os.listdir(landmark_path):
+            src = os.path.join(landmark_path, file)
+            dst = os.path.join(landmarks_dest, f"{file}")
+            shutil.copy2(src, dst)
 
-        # Skip if not a valid class
-        if not is_valid_class(class_name):
-            print(f"Skipping invalid class: {class_name}")
-            continue
+    print(f"Processed: {class_name}")
 
-        # Set up destination directories
-        class_dir = os.path.join(destination_root, class_name)
-        landmark_dir = os.path.join(class_dir, 'LANDMARKS')
+# Source and destination paths
+source_path = r"D:\SignLanguage\MAIN_DATASET\Backup\LEFT_NAMES\CLOUD\Z"
+dest_path = r"D:\SignLanguage\MAIN_DATASET\Backup\COMBINED"
 
-        # Ensure class directory exists
-        os.makedirs(class_dir, exist_ok=True)
+# Run the reorganization
+copy_and_organize_files(source_path, dest_path)
 
-        # Copy files based on their type
-        for file in files:
-            src_file = os.path.join(root, file)
-            if 'LANDMARK' in root.upper():
-                # This is a landmark file
-                dst_file = os.path.join(landmark_dir, file)
-                os.makedirs(landmark_dir, exist_ok=True)
-            else:
-                # This is an image file
-                dst_file = os.path.join(class_dir, file)
-            
-            if not os.path.exists(dst_file):
-                shutil.copy2(src_file, dst_file)
-                print(f"Copied: {src_file} -> {dst_file}")
-            else:
-                print(f"Skipped (already exists): {dst_file}")
-
-    print("File reorganization complete.")
-
-if __name__ == "__main__":
-    source_root = r"D:\SignLanguage\TOOLS\LETTERS_NUMS_LR\RIGHT_NAMES\XANDRA"
-    destination_root = r"D:\SignLanguage\TOOLS\LETTERS_NUMS_LR\DATASET\RIGHT"   
-
-    reorganize_files(source_root, destination_root)
+print("File reorganization complete!")
