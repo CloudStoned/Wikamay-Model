@@ -4,6 +4,7 @@
 .cache_torch/
 model_files/
 mp_venv/
+*.pyc
 
 #ALL IMAGE EXTENSIONS
 *.jpg
