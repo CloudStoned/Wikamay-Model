@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private PreviewView previewView;
+
+
     private TextView textView;
     private Module module;
     private List<String> classes;
