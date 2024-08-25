@@ -3,6 +3,7 @@
 .cache/
 .cache_torch/
 model_files/
+mp_venv/
 
 #ALL IMAGE EXTENSIONS
 *.jpg
