@@ -1,5 +1,4 @@
 import os
-import pickle
 import mediapipe as mp
 import cv2
 import matplotlib.pyplot as plt
@@ -8,21 +7,18 @@ mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 
-hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
+hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.4)
 
-DATA_DIR = 'sl_detection/data'
-
-data = []
-labels = []
+DATA_DIR = 'RFC_MODEL/data'
 
 # Create a single figure outside the loop
-plt.figure(figsize=(10, 10))
+plt.figure(figsize=(15, 10))
 
 for dir_ in os.listdir(DATA_DIR):
+    image_count = 0
     for img_path in os.listdir(os.path.join(DATA_DIR, dir_)):
-        data_aux = []
-        x_ = []
-        y_ = []
+        if image_count >= 5:
+            break
 
         img = cv2.imread(os.path.join(DATA_DIR, dir_, img_path))
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -38,17 +34,18 @@ for dir_ in os.listdir(DATA_DIR):
                     mp_drawing_styles.get_default_hand_connections_style()
                 )
 
-        # Clear the current figure and display the new image
         plt.clf()
         plt.imshow(img_rgb)
-        plt.title(f"Image: {img_path}")
+        plt.title(f"Class: {dir_}, Image: {img_path}")
         plt.axis('off')
         plt.draw()
-        plt.pause(0.1)  # Pause to update the figure
+        plt.pause(1)  # Pause for 1 second to view each image
 
-    # Your data processing code (currently commented out) would go here
+        image_count += 1
+
+    print(f"Finished displaying 5 images for class: {dir_}")
 
 # Close the figure at the end
 plt.close()
 
-# Your pickling code (currently commented out) would go here
+print("Visualization complete.")
