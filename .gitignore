@@ -3,7 +3,6 @@
 .cache/
 .cache_torch/
 model_files/
-mp_venv/
 *.pyc
 
 #ALL IMAGE EXTENSIONS
@@ -14,8 +13,12 @@ mp_venv/
 *.PNG
 *.rar
 
-# Ignore venv
+# Ignore venv files
 TOOLS/capture_venv
+mp_venv/
+onnx_venv/
+torch_venv/
+joblib_venv/
 
 #Ignore json
 *.json
