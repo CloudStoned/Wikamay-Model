@@ -23,7 +23,7 @@ def convert_to_joblib(model, filename='random_forest_model.joblib'):
         print(f"Model successfully saved in joblib format as: {filename}")
         return True
     except Exception as e:
-        print(f"Error saving model to joblib format: {e}")
+        print(f"Error saving model to joblib format: {e}")g
         return False
 
 def train(data_dict):
