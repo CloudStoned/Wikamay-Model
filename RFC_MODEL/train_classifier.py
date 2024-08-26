@@ -9,8 +9,6 @@ def show_data(data):
     print(data['labels'])
     print(data['data'])
 
-
-
 def train(data_dict):
     data = np.asarray(data_dict['data'])
     labels = np.asarray(data_dict['labels'])
@@ -36,4 +34,3 @@ if __name__ == '__main__':
     data_dict = pickle.load(open('RFC_MODEL/data.pickle', 'rb'))
     # show_data(data_dict)
     train(data_dict)
-
