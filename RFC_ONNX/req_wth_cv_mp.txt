@@ -1,0 +1,7 @@
+opencv-python==4.7.0.68
+mediapipe==0.9.1.0
+scikit-learn==1.2.2
+numpy==1.21.6
+skl2onnx==1.13.0
+onnx==1.13.0
+onnxruntime==1.13.1
