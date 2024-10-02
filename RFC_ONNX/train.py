@@ -23,7 +23,7 @@ def convert_to_joblib(model, filename='random_forest_model.joblib'):
         print(f"Model successfully saved in joblib format as: {filename}")
         return True
     except Exception as e:
-        print(f"Error saving model to joblib format: {e}")g
+        print(f"Error saving model to joblib format: {e}")
         return False
 
 def train(data_dict):
@@ -83,6 +83,6 @@ def train(data_dict):
 
 if __name__ == '__main__':
     data_dict = load(r'D:\SignLanguage\RFC_MODEL\data.pickle')
-    # show_data(data_dict)
-    # shape_data(data_dict)
-    train(data_dict)
+    show_data(data_dict)
+    shape_data(data_dict)
+    # train(data_dict)

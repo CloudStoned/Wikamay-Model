@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -49,11 +49,15 @@ public class MainActivity extends AppCompatActivity {
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private PreviewView previewView;
 
-
     private TextView textView;
     private Module module;
     private List<String> classes;
     private final Executor executor = Executors.newSingleThreadExecutor();
+
+    private TextView combinedLettersTextView;
+    private Button combineLettersButton;
+    private Button clearButton;
+    private StringBuilder combinedLetters = new StringBuilder();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +66,12 @@ public class MainActivity extends AppCompatActivity {
 
         previewView = findViewById(R.id.cameraView);
         textView = findViewById(R.id.result_text);
+        combinedLettersTextView = findViewById(R.id.combined_letters);
+        combineLettersButton = findViewById(R.id.combine_letters);
+        clearButton = findViewById(R.id.clear_button);
+
+        combineLettersButton.setOnClickListener(v -> combineLetters());
+        clearButton.setOnClickListener(v -> clearCombinedLetters());
 
         if (checkPermissions()) {
             initializeApp();
@@ -81,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeApp() {
         classes = loadClasses("classes.txt");
-        loadTorchModule("mnetV2_35.ptl");
+        loadTorchModule("2_CLASSES_MODEL.ptl");
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
         cameraProviderFuture.addListener(() -> {
             try {
@@ -174,7 +184,11 @@ public class MainActivity extends AppCompatActivity {
             if (maxScoreIdx >= 0 && maxScoreIdx < classes.size()) {
                 String classResult = classes.get(maxScoreIdx);
                 Log.d(TAG, "Detected - " + classResult);
-                runOnUiThread(() -> textView.setText(classResult));
+                runOnUiThread(() -> {
+                    textView.setText(classResult);
+                    // Enable the combine letters button when a letter is detected
+                    combineLettersButton.setEnabled(true);
+                });
             } else {
                 Log.e(TAG, "Index out of bounds for class labels");
             }
@@ -199,4 +213,21 @@ public class MainActivity extends AppCompatActivity {
         }
         return classes;
     }
+
+    private void combineLetters()
+    {
+        String currentLetter = textView.getText().toString();
+        if(!currentLetter.equals("Result Here"))
+        {
+            combinedLetters.append(currentLetter);
+            combinedLettersTextView.setText(combinedLetters.toString());
+        }
+    }
+
+    private void clearCombinedLetters()
+    {
+        combinedLetters.setLength(0);
+        combinedLettersTextView.setText("Combined Letters");
+    }
+
 }

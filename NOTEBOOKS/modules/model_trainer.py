@@ -2,38 +2,21 @@ import torch
 import time
 import copy
 from tqdm.auto import tqdm
-from datetime import datetime
-
-
-"""
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-
-# Create a learning rate scheduler
-scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=5)
-
-# Initialize ModelTrainer
-trainer = ModelTrainer()
-
-# Train the model
-trained_model, results = trainer.train(
-    model=model,
-    train_loader=train_loader,
-    test_loader=test_loader,
-    optimizer=optimizer,
-    loss_fn=criterion,
-    epochs=num_epochs,
-    scheduler=scheduler,
-    patience=10  # Early stopping patience
-)
-
-"""
 
 class ModelTrainer:
     EARLY_STOPPING_PATIENCE = 10
 
     def __init__(self, device=None):
-        self.device = device if device else torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        if device is None:
+            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        else:
+            self.device = device
+        
+        print(f"ModelTrainer initialized with device: {self.device}")
+        if self.device.type == "cuda":
+            print(f"CUDA device: {torch.cuda.get_device_name(0)}")
+            print(f"CUDA available: {torch.cuda.is_available()}")
+            print(f"Current CUDA device: {torch.cuda.current_device()}")
 
     def train_step(self, model, dataloader, loss_fn, optimizer):
         model.train()
@@ -77,8 +60,16 @@ class ModelTrainer:
         return test_loss, test_acc
 
     def train(self, model, train_loader, test_loader, optimizer, loss_fn, epochs, scheduler=None, patience=None):
+        print(f"Training on device: {self.device}")
+        print(f"Model is on device: {next(model.parameters()).device}")
+        
+        if next(model.parameters()).device != self.device:
+            print(f"Moving model to {self.device}")
+            model.to(self.device)
+        
+        print(f"After moving, model is on device: {next(model.parameters()).device}")
+        
         patience = patience if patience is not None else self.EARLY_STOPPING_PATIENCE
-        model.to(self.device)
         results = {"train_loss": [], "train_acc": [], "test_loss": [], "test_acc": []}
         best_loss = float('inf')
         best_test_accuracy = 0

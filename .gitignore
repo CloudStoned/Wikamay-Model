@@ -19,6 +19,7 @@ mp_venv/
 onnx_venv/
 torch_venv/
 joblib_venv/
+tf_venv/
 
 #Ignore json
 *.json
