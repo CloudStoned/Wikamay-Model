@@ -5,3 +5,4 @@ mediapipe==0.9.1.0
 scikit-learn==1.5.1
 numpy==2.0.1
 flask==3.0.3
+huggingface_hub==0.20.3
