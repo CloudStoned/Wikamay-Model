@@ -3,8 +3,8 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from huggingface_hub import push_to_hub_sklearn
-
+from huggingface_hub import HfApi
+from huggingface_hub import login
 import os
 from dotenv import load_dotenv
 
@@ -33,18 +33,21 @@ def train(data_dict):
     print('{}% of samples were classified correctly !'.format(score * 100))
 
     # Save model locally
-    with open('model.p', 'wb') as f:
-        pickle.dump({'model': model}, f)
-    print("Model saved locally")
+    with open('model.pkl', 'wb') as f:
+        pickle.dump(model, f)
+    print("Model saved locally as model.pkl")
 
     return model
 
-def push_to_hub(model, repo_name, token):
+def push_to_hub(model_path, repo_name, token):
     try:
-        push_to_hub_sklearn(
-            model,
-            repo_name=repo_name,
-            token=token
+        login(token)
+        api = HfApi()
+        api.upload_file(
+            path_or_fileobj=model_path,
+            path_in_repo="model.pkl",
+            repo_id=repo_name,
+            repo_type="model",
         )
         print(f"Model successfully pushed to Hugging Face Hub: {repo_name}")
     except Exception as e:
@@ -56,5 +59,6 @@ if __name__ == '__main__':
     trained_model = train(data_dict)
     
     # Push model to Hugging Face Hub
-    repo_name = "cLoudstone99/ASL_RECOG"  # Updated with the provided repository name
-    push_to_hub(trained_model, repo_name, HUB_API)
+    repo_name = "cLoudstone99/ASL_RECOG"
+    model_path = "model.pkl"
+    push_to_hub(model_path, repo_name, HUB_API)
