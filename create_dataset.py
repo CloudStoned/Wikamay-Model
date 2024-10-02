@@ -8,7 +8,7 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 
 hands = mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_confidence=0.4)
-DATA_DIR = 'RFC_MODEL/data'
+DATA_DIR = 'data'
 
 data = []
 labels = []

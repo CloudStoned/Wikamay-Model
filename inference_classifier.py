@@ -2,8 +2,16 @@ import pickle
 import cv2
 import mediapipe as mp
 import numpy as np
+import json
 
-model_dict = pickle.load(open('RFC_MODEL/model.p', 'rb'))
+
+# Load Classes
+with open('CLASSES.json', 'r') as json_file:
+    labels_dict = json.load(json_file)
+
+labels_dict = {int(k): v for k, v in labels_dict.items()}
+
+model_dict = pickle.load(open('model.p', 'rb'))
 model = model_dict['model']
 
 cap = cv2.VideoCapture(0)
@@ -13,18 +21,6 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 
 hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
-
-labels_dict = {0: '0',
-               1: '1',
-               2: '2',
-               3: '3',
-               4: '4',
-               5: '5',
-               6: '6',
-               7: '7',
-               8: '8',
-               9: '9',
-               10: '10'}
 
 
 while True:
@@ -68,8 +64,10 @@ while True:
         prediction = model.predict([np.asarray(data_aux)])
         predicted_character = labels_dict[int(prediction[0])]
 
-        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 0), 4)
-        cv2.putText(frame, predicted_character, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3, cv2.LINE_AA)
+        # Change bounding box color to red
+        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 4)
+        # Change text color to white
+        cv2.putText(frame, predicted_character, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (255, 255, 255), 3, cv2.LINE_AA)
 
     cv2.imshow('frame', frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):

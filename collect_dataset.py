@@ -2,12 +2,12 @@ import os
 import cv2
 import mediapipe as mp
 
-DATA_DIR = 'RFC_MODEL/data'
+DATA_DIR = 'data'
 if not os.path.exists(DATA_DIR):
     os.makedirs(DATA_DIR)
 
-number_of_classes = 11
-dataset_size = 100
+number_of_classes = 37
+dataset_size = 150
 
 # Initialize MediaPipe Hands
 mp_hands = mp.solutions.hands

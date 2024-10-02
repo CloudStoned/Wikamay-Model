@@ -31,6 +31,6 @@ def train(data_dict):
     f.close()
 
 if __name__ == '__main__':
-    data_dict = pickle.load(open('RFC_MODEL/data.pickle', 'rb'))
+    data_dict = pickle.load(open('data.pickle', 'rb'))
     # show_data(data_dict)
     train(data_dict)
