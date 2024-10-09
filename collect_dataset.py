@@ -61,9 +61,18 @@ for j in range(number_of_classes):
         cv2.putText(preview_frame, 'Collecting frame {} of {}'.format(counter, dataset_size), (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         cv2.imshow('frame', preview_frame)
         cv2.waitKey(25)
+        
         cv2.imwrite(os.path.join(DATA_DIR, str(j), '{}.jpg'.format(counter)), frame)  # Save original frame
 
         counter += 1
+
+        # Check if counter has reached 100
+        if counter == 100:
+            cv2.putText(preview_frame, 'Reached 100 frames. Press "Q" to continue.', (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.imshow('frame', preview_frame)
+            while True:
+                if cv2.waitKey(25) == ord('q'):
+                    break
 
     print(f"Finished collecting data for class {j}")
 
