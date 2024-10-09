@@ -7,7 +7,7 @@ if not os.path.exists(DATA_DIR):
     os.makedirs(DATA_DIR)
 
 number_of_classes = 37
-dataset_size = 150
+dataset_size = 200
 
 # Initialize MediaPipe Hands
 mp_hands = mp.solutions.hands
@@ -68,9 +68,18 @@ for j in range(number_of_classes):
 
         # Check if counter has reached 100
         if counter == 100:
-            cv2.putText(preview_frame, 'Reached 100 frames. Press "Q" to continue.', (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-            cv2.imshow('frame', preview_frame)
+            # Inform the user to press "Q" to continue
             while True:
+                # Update the display with the current frame
+                ret, frame = cap.read()
+                if not ret:
+                    break
+                preview_frame = draw_landmarks(frame)
+                
+                cv2.putText(preview_frame, 'Reached 100 frames. Press "Q" to continue.', (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                cv2.imshow('frame', preview_frame)
+                
+                # Check for user input
                 if cv2.waitKey(25) == ord('q'):
                     break
 
