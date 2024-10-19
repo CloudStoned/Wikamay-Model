@@ -1,4 +1,5 @@
 venv/
 
 #Dataset
-data/
+NUM_DATA/
+ALPH_DATA/

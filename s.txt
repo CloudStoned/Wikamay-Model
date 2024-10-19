@@ -1,5 +1,0 @@
-.\venv\Scripts\activate
-py collect_dataset.py
-py create_dataset.py
-py train_classifier.py
-py inference_classifier.py

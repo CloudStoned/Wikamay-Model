@@ -6,15 +6,15 @@ DATA_DIR = 'data'
 if not os.path.exists(DATA_DIR):
     os.makedirs(DATA_DIR)
 
-number_of_classes = 37
-dataset_size = 150
+number_of_classes = 25
+dataset_size = 200
 
 # Initialize MediaPipe Hands
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 hands = mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_confidence=0.4)
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 def draw_landmarks(frame):
     # Convert the BGR image to RGB

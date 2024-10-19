@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response
+from flask import Flask, render_template, Response, request
 import cv2
 import mediapipe as mp
 import numpy as np
@@ -7,29 +7,36 @@ import pickle
 
 app = Flask(__name__)
 
-# Load the labels
-try:
-    with open('CLASSES.json', 'r') as json_file:
-        labels_dict = json.load(json_file)
-    labels_dict = {int(k): v for k, v in labels_dict.items()}
-except FileNotFoundError:
-    print("CLASSES.json file not found. Please ensure it's in the correct directory.")
-    exit(1)
-except json.JSONDecodeError:
-    print("Error decoding CLASSES.json. Please ensure it's a valid JSON file.")
-    exit(1)
-
-# Load the model
-model_dict = pickle.load(open('model.p', 'rb'))
-model = model_dict['model']
-
 # Set up MediaPipe
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
 
-def gen_frames():
+# Function to load the selected model and classes
+def load_model_and_classes(choice):
+    if choice == 'alphabet':
+        model_dict = pickle.load(open('alphabet_model.p', 'rb'))
+        model = model_dict['model']
+        with open('ALPHABET_CLASSES.json', 'r') as json_file:
+            labels_dict = json.load(json_file)
+        labels_dict = {int(k): v for k, v in labels_dict.items()}
+    elif choice == 'numbers':
+        model_dict = pickle.load(open('numbers_model.p', 'rb'))
+        model = model_dict['model']
+        with open('NUMBERS_CLASSES.json', 'r') as json_file:
+            labels_dict = json.load(json_file)
+        labels_dict = {int(k): v for k, v in labels_dict.items()}
+    else:
+        model = None
+        labels_dict = {}
+    return model, labels_dict
+
+# Default to alphabet recognition
+model, labels_dict = load_model_and_classes('alphabet')
+
+# Function to generate frames for video feed
+def gen_frames(model, labels_dict):
     cap = cv2.VideoCapture(0)
     while True:
         data_aux = []
@@ -87,7 +94,10 @@ def index():
 
 @app.route('/video_feed')
 def video_feed():
-    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    # Get the user's choice (either 'alphabet' or 'numbers')
+    choice = request.args.get('choice', 'alphabet')
+    model, labels_dict = load_model_and_classes(choice)
+    return Response(gen_frames(model, labels_dict), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
     app.run(debug=True)

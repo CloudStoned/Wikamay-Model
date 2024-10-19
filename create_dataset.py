@@ -8,7 +8,7 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 
 hands = mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_confidence=0.4)
-DATA_DIR = 'data'
+DATA_DIR = 'ALPH_DATA'
 
 data = []
 labels = []
@@ -73,9 +73,10 @@ def process_images():
     return data, labels
 
 def save_data(data, labels):
-    f = open('data.pickle', 'wb')
+    pickle_name = './ALPH_DATA'
+    f = open(f'{pickle_name}.pickle', 'wb')
     pickle.dump({'data': data, 'labels': labels}, f)
-    print(f"Dataset created and saved as 'data.pickle'")
+    print(f"Dataset created and saved as '{pickle_name}.pickle'")
     f.close()
 
 if __name__=='__main__':

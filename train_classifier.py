@@ -25,12 +25,13 @@ def train(data_dict):
 
     print('{}% of samples were classified correctly !'.format(score * 100))
 
-    f = open('model.p', 'wb')
+    model_name = 'alph_model'
+    f = open(f'{model_name}.p', 'wb')
     pickle.dump({'model': model}, f)
     print("Model Created")
     f.close()
 
 if __name__ == '__main__':
-    data_dict = pickle.load(open('data.pickle', 'rb'))
+    data_dict = pickle.load(open('ALPH_DATA.pickle', 'rb'))
     # show_data(data_dict)
     train(data_dict)
