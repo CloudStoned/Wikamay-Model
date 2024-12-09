@@ -8,6 +8,7 @@ import random
 import threading
 import time
 import base64
+import string
 
 app = Flask(__name__)
 
@@ -33,7 +34,8 @@ class HandGestureRecognizer:
         self.current_model = None
         self.current_labels = None
         self.current_model_type = None
-        self.current_target = None
+        self.current_targets = []
+        self.current_target_index = 0
         self.last_correct_prediction_time = 0
         self.prediction_lock = threading.Lock()
 
@@ -43,13 +45,15 @@ class HandGestureRecognizer:
                 self.current_model = self.alph_model
                 self.current_labels = self.alph_labels
                 self.current_model_type = 'alphabet'
-                self.current_target = random.choice(list(self.alph_labels.values()))
+                self.current_targets = list(string.ascii_uppercase)
             elif model_type == 'number':
                 self.current_model = self.num_model
                 self.current_labels = self.num_labels
                 self.current_model_type = 'number'
-                self.current_target = random.choice(list(range(1, 11)))
-            return self.current_target
+                self.current_targets = list(range(0, 11))
+            
+            self.current_target_index = 0
+            return self.current_targets[0]
 
     def predict_gesture(self, frame):
         # Convert frame to RGB
@@ -89,16 +93,20 @@ class HandGestureRecognizer:
     def check_prediction(self, predicted_character):
         with self.prediction_lock:
             current_time = time.time()
-            if str(predicted_character) == str(self.current_target):
-                if current_time - self.last_correct_prediction_time > 2:
+            if str(predicted_character) == str(self.current_targets[self.current_target_index]):
+                if current_time - self.last_correct_prediction_time > 1:
                     self.last_correct_prediction_time = current_time
-                    # Generate new target
-                    if self.current_model_type == 'alphabet':
-                        self.current_target = random.choice(list(self.alph_labels.values()))
-                    else:
-                        self.current_target = random.choice(list(range(1, 11)))
-                    return True, self.current_target
+                    
+                    # Move to next target
+                    self.current_target_index += 1
+                    
+                    # Check if all targets are completed
+                    if self.current_target_index >= len(self.current_targets):
+                        return True, None
+                    
+                    return True, self.current_targets[self.current_target_index]
         return False, None
+
 
 # Global recognizer instance
 recognizer = HandGestureRecognizer()

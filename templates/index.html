@@ -79,10 +79,14 @@
                 .then(data => {
                     if (data.predicted_character) {
                         $('#result').text(`Predicted: ${data.predicted_character}`);
-                        
+
                         if (data.is_correct) {
-                            $('#random-number').text(data.new_target);
-                            $('#result').text('Correct Gesture!');
+                            if (data.new_target !== null) {
+                                $('#random-number').text(data.new_target);
+                                $('#result').text('Correct Gesture!');
+                            } else {
+                                $('#result').text('Completed all targets!');
+                            }
                         }
                     }
                 });
